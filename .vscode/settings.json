@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "timer.h": "c",
+        "usart2.h": "c",
+        "stm32f4xx.h": "c",
+        "can.h": "c",
+        "myproject.h": "c",
+        "utils.h": "c"
+    }
+}
