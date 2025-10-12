@@ -322,12 +322,12 @@ bool controller_update(void)
 		if(cogindex>COG_num)cogindex=COG_num;
 		torque += anticogging.cogging_map[cogindex];
 		
-		static uint32_t lednumb;
-		if(++lednumb >= 2000)  //0.25s   LED灯放在这个地方，方便观察是否使用抗齿槽校准功能
-		{
-			lednumb = 0;
-			GPIOD->ODR^=(1<<2);
-		}
+//		static uint32_t lednumb;
+//		if(++lednumb >= 2000)  //0.25s   LED灯放在这个地方，方便观察是否使用抗齿槽校准功能
+//		{
+//			lednumb = 0;
+//			GPIOD->ODR^=(1<<2);
+//		}
 	}
 	
 	float v_err = 0.0f;

@@ -5,6 +5,12 @@
         "stm32f4xx.h": "c",
         "can.h": "c",
         "myproject.h": "c",
-        "utils.h": "c"
+        "utils.h": "c",
+        "vofa.h": "c",
+        "motor.h": "c",
+        "axis.h": "c",
+        "anticogging.h": "c",
+        "open_loop_controller.h": "c",
+        "adc.h": "c"
     }
 }

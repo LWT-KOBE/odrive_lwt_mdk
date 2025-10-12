@@ -1,4 +1,3 @@
-
 #ifndef __OPEN_LOOP_CONTROLLER_LIB_H
 #define __OPEN_LOOP_CONTROLLER_LIB_H
 

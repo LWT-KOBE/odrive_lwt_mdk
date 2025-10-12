@@ -55,13 +55,13 @@
 .\objects\arm_cos_f32.o: .\SYSTEM\delay\delay.h
 .\objects\arm_cos_f32.o: .\SYSTEM\sys\sys.h
 .\objects\arm_cos_f32.o: .\Hardware\usart2.h
+.\objects\arm_cos_f32.o: .\USER\MyProject.h
 .\objects\arm_cos_f32.o: .\Hardware\timer.h
 .\objects\arm_cos_f32.o: .\Hardware\adc.h
 .\objects\arm_cos_f32.o: .\Hardware\spi3.h
 .\objects\arm_cos_f32.o: .\MotorControl\utils.h
 .\objects\arm_cos_f32.o: .\MotorControl\arm_cos_f32.h
 .\objects\arm_cos_f32.o: .\MotorControl\foc.h
-.\objects\arm_cos_f32.o: .\USER\MyProject.h
 .\objects\arm_cos_f32.o: .\MotorControl\open_loop_controller.h
 .\objects\arm_cos_f32.o: .\MotorControl\board.h
 .\objects\arm_cos_f32.o: .\MotorControl\motor.h
@@ -72,3 +72,7 @@
 .\objects\arm_cos_f32.o: .\MotorControl\flash_writer.h
 .\objects\arm_cos_f32.o: .\MotorControl\anticogging.h
 .\objects\arm_cos_f32.o: .\Hardware\vofa.h
+.\objects\arm_cos_f32.o: .\Hardware\can.h
+.\objects\arm_cos_f32.o: .\SEGGER\RTT\SEGGER_RTT.h
+.\objects\arm_cos_f32.o: .\SEGGER\RTT\../Config/SEGGER_RTT_Conf.h
+.\objects\arm_cos_f32.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h

@@ -55,13 +55,13 @@
 .\objects\open_loop_controller.o: .\SYSTEM\delay\delay.h
 .\objects\open_loop_controller.o: .\SYSTEM\sys\sys.h
 .\objects\open_loop_controller.o: .\Hardware\usart2.h
+.\objects\open_loop_controller.o: .\USER\MyProject.h
 .\objects\open_loop_controller.o: .\Hardware\timer.h
 .\objects\open_loop_controller.o: .\Hardware\adc.h
 .\objects\open_loop_controller.o: .\Hardware\spi3.h
 .\objects\open_loop_controller.o: .\MotorControl\utils.h
 .\objects\open_loop_controller.o: .\MotorControl\arm_cos_f32.h
 .\objects\open_loop_controller.o: .\MotorControl\foc.h
-.\objects\open_loop_controller.o: .\USER\MyProject.h
 .\objects\open_loop_controller.o: .\MotorControl\open_loop_controller.h
 .\objects\open_loop_controller.o: .\MotorControl\board.h
 .\objects\open_loop_controller.o: .\MotorControl\motor.h
@@ -72,3 +72,7 @@
 .\objects\open_loop_controller.o: .\MotorControl\flash_writer.h
 .\objects\open_loop_controller.o: .\MotorControl\anticogging.h
 .\objects\open_loop_controller.o: .\Hardware\vofa.h
+.\objects\open_loop_controller.o: .\Hardware\can.h
+.\objects\open_loop_controller.o: .\SEGGER\RTT\SEGGER_RTT.h
+.\objects\open_loop_controller.o: .\SEGGER\RTT\../Config/SEGGER_RTT_Conf.h
+.\objects\open_loop_controller.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h

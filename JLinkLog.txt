@@ -1,0 +1,30 @@
+T837C 000:003.948   SEGGER J-Link V7.82 Log File
+T837C 000:004.045   DLL Compiled: Oct 13 2022 13:32:51
+T837C 000:004.054   Logging started @ 2025-09-28 01:38
+T837C 000:004.063 - 4.067ms
+T837C 000:004.075 JLINK_SetWarnOutHandler(...)
+T837C 000:004.085 - 0.014ms
+T837C 000:004.094 JLINK_OpenEx(...)
+T837C 000:005.641   Firmware: J-Link V9 compiled May  7 2021 16:26:12
+T837C 000:006.046   Firmware: J-Link V9 compiled May  7 2021 16:26:12
+T837C 000:006.167   Decompressing FW timestamp took 93 us
+T837C 000:015.787   
+  ***** Error: 
+T837C 000:015.820   Communication timed out: Requested 2304 bytes, received 0 bytes !
+T837C 002:512.189   
+  ***** Error: 
+T837C 002:512.217   Could not read Hardware version.
+T837C 002:512.229   Hardware: V0.00
+T837C 002:512.241   S/N: 69409253
+T837C 002:512.253   OEM: SEGGER
+T837C 002:512.265   Feature(s): RDI, GDB, FlashDL, FlashBP, JFlash
+T837C 002:512.313   
+  ***** Error: 
+T837C 002:512.335   Cannot connect to J-Link
+T837C 002:515.380 - 2511.296ms returns "Communication timed out: Requested 2304 bytes, received 0 bytes !
+Could not read Hardware version.
+Cannot connect to J-Link"
+T837C 003:626.174 JLINK_Close()
+T837C 003:628.921 - 2.766ms
+T837C 003:628.948   
+T837C 003:628.958   Closed

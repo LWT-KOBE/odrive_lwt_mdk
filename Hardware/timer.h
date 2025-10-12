@@ -10,6 +10,7 @@
 void TIM1_PWM_Init(void);
 void TIM2_Init(void);
 void TIM3_Encoder_Init(void);
+void TIM3_InputCapture_Config(void);
 void TIM7_Init(void);
 /******************************************************************************/
 

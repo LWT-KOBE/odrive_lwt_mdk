@@ -71,6 +71,21 @@ typedef struct
 	float d;
 	float q;
 } float2D;
+
+
+typedef union{
+	u8 		u8_temp[4];
+	float float_temp;
+	s32 	s32_temp;
+	u32		u32_temp;
+} formatTrans32Struct_t;
+
+typedef union{
+	u8 		u8_temp[2];
+	s16 	s16_temp;
+	u16		u16_temp;	
+} formatTrans16Struct_t;
+
 /****************************************************************************/
 
 

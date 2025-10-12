@@ -53,6 +53,7 @@ uint8_t fetch_and_reset_adcs(Iph_ABC_t *current)
 #define LED_blink   GPIOD->ODR^=(1<<2)  //PD2
 /****************************************************************************/
 uint32_t time_cntr=0;
+u8 can_temp[8];
 volatile uint32_t timestamp_ = 0;
 extern  void control_loop_cb(void);  //在main.c文件中
 
@@ -60,7 +61,7 @@ extern  void control_loop_cb(void);  //在main.c文件中
 void TIM1_UP_TIM10_IRQHandler(void)
 {
 	uint32_t i;
-	
+	//CAN1_Send_Msg(can_temp,8);
 	TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 	timestamp_ += TIM_1_8_PERIOD_CLOCKS * (TIM_1_8_RCR + 1);
 	

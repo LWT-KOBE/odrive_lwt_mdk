@@ -34,3 +34,4 @@
 .\objects\adc.o: .\FWLIB\inc\stm32f4xx_dac.h
 .\objects\adc.o: .\FWLIB\inc\stm32f4xx_dcmi.h
 .\objects\adc.o: .\FWLIB\inc\stm32f4xx_fsmc.h
+.\objects\adc.o: Hardware\adc.h

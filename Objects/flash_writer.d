@@ -55,13 +55,13 @@
 .\objects\flash_writer.o: .\SYSTEM\delay\delay.h
 .\objects\flash_writer.o: .\SYSTEM\sys\sys.h
 .\objects\flash_writer.o: .\Hardware\usart2.h
+.\objects\flash_writer.o: .\USER\MyProject.h
 .\objects\flash_writer.o: .\Hardware\timer.h
 .\objects\flash_writer.o: .\Hardware\adc.h
 .\objects\flash_writer.o: .\Hardware\spi3.h
 .\objects\flash_writer.o: .\MotorControl\utils.h
 .\objects\flash_writer.o: .\MotorControl\arm_cos_f32.h
 .\objects\flash_writer.o: .\MotorControl\foc.h
-.\objects\flash_writer.o: .\USER\MyProject.h
 .\objects\flash_writer.o: .\MotorControl\open_loop_controller.h
 .\objects\flash_writer.o: .\MotorControl\board.h
 .\objects\flash_writer.o: .\MotorControl\motor.h
@@ -72,3 +72,7 @@
 .\objects\flash_writer.o: .\MotorControl\flash_writer.h
 .\objects\flash_writer.o: .\MotorControl\anticogging.h
 .\objects\flash_writer.o: .\Hardware\vofa.h
+.\objects\flash_writer.o: .\Hardware\can.h
+.\objects\flash_writer.o: .\SEGGER\RTT\SEGGER_RTT.h
+.\objects\flash_writer.o: .\SEGGER\RTT\../Config/SEGGER_RTT_Conf.h
+.\objects\flash_writer.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h

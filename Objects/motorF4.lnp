@@ -69,6 +69,8 @@
 ".\objects\flash_writer.o"
 ".\objects\anticogging.o"
 ".\objects\main.o"
+".\objects\segger_rtt.o"
+".\objects\segger_rtt_printf.o"
 --library_type=microlib --strict --scatter ".\Objects\motorF4.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

@@ -14,6 +14,7 @@ extern  float  *phase_src_;
 extern  float  *phase_vel_src_;
 extern  float  Ibus;
 extern  float  pi_gains_[2];
+extern  float  Id_measured,Iq_measured;
 /****************************************************************************/
 bool enqueue_modulation_timings(float mod_alpha, float mod_beta);
 void on_measurement(uint32_t input_timestamp, Iph_ABC_t *current);

@@ -1,5 +1,3 @@
-
-
 #ifndef MYPROJECT_H
 #define MYPROJECT_H
 
@@ -35,6 +33,8 @@
 #include "flash_writer.h"
 #include "anticogging.h"
 #include "vofa.h"
+#include "can.h"
+#include "SEGGER_RTT.h"
 
 /****************************************************************************/
 #define TIM_1_8_CLOCK_HZ 168000000
@@ -44,6 +44,16 @@
 #define TIM_APB1_PERIOD_CLOCKS 4096
 #define TIM_APB1_DEADTIME_CLOCKS 40  //50=595ns
 #define TIM_1_8_RCR 2
+
+// NTC参数定义
+#define NTC_R25      10000.0f   // 25℃时的电阻值(10K)
+#define NTC_BETA     3950.0f    // B值(3950)
+#define NTC_T25      298.15f    // 25℃对应的开尔文温度(25 + 273.15)
+#define VREF         3.3f       // ADC参考电压(3.3V)
+#define ADC_RES      4095.0f    // 12位ADC分辨率(2^12 - 1)
+
+// 分压电阻值(根据实际电路调整)
+#define VOLTAGE_DIVIDER_R  10000.0f  // 与NTC串联的分压电阻(10K)
 
 // Period in [s]
 #define CURRENT_MEAS_PERIOD ( (float)2*TIM_1_8_PERIOD_CLOCKS*(TIM_1_8_RCR+1) / (float)TIM_1_8_CLOCK_HZ )
@@ -87,8 +97,8 @@ static const int current_meas_hz = CURRENT_MEAS_HZ;
 //电机配置参数，根据电机型号选择
 #define  MOTOR_type                 MOTOR_TYPE_HIGH_CURRENT   //MOTOR_TYPE_GIMBAL //MOTOR_TYPE_HIGH_CURRENT
 #define  MOTOR_pole_pairs                          7    //电机极对数
-#define  MOTOR_calibration_current                 6    //校准电流
-#define  MOTOR_resistance_calib_max_voltage        2    //校准限制电压
+#define  MOTOR_calibration_current                 2    //校准电流
+#define  MOTOR_resistance_calib_max_voltage        6    //校准限制电压
 #define  MOTOR_current_lim                        30    //电机最大运行电流
 
 //MT6701采用三线SPI:接CS、SCLK、MISO；不需要接MOSI引脚。

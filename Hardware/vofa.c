@@ -4,6 +4,9 @@ volatile struct Frame vofaFrame = {
 	.tail = {0x00, 0x00, 0x80, 0x7f}
 };
 
+volatile struct Frame_Send DeviceFrame = {
+    .tail = {0x00, 0x00, 0xAA, 0x55}
+};
 
 //RawData数据协议 测试
 void RawData_Test(void)		//  直接当串口助手使用 测试是否可行
@@ -29,11 +32,7 @@ void FireWater_Test(void)
 1. float和unsigned long具有相同的数据结构长度
 2. union据类型里的数据存放在相同的物理空间
 */
-typedef union
-{
-    float fdata;
-    unsigned long ldata;
-} FloatLongType;
+
 
 
 /*
@@ -124,8 +123,16 @@ void Vofa_sendData(float Byte)
 */
 void vofa_print(void)
 {
-	// HAL_UART_Transmit_DMA(&huart3, (uint8_t *) (&vofaFrame), sizeof(vofaFrame));
-	// CDC_Transmit_FS((uint8_t *) (&vofaFrame), sizeof(vofaFrame));
-
     u2_SendArray((uint8_t *) (&vofaFrame), sizeof(vofaFrame));
 }
+
+/**
+ * @brief  通过USB发送vofa数据帧
+ * @param  无
+ */
+void vofa_printf_USB(void)
+{
+   usb_send((uint8_t *) (&vofaFrame), sizeof(vofaFrame));
+}
+
+

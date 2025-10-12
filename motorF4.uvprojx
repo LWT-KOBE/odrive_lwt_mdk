@@ -328,8 +328,8 @@
             <uC99>1</uC99>
             <uGnu>0</uGnu>
             <useXO>0</useXO>
-            <v6Lang>1</v6Lang>
-            <v6LangP>1</v6LangP>
+            <v6Lang>3</v6Lang>
+            <v6LangP>3</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
             <v6Lto>0</v6Lto>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER,USE_USB_OTG_FS</Define>
               <Undefine></Undefine>
-              <IncludePath>.\STARTUP;.\FWLIB\inc;.\SYSTEM\delay;.\SYSTEM\sys;.\USB_App\inc;.\USB_Device\inc;.\USB_Driver\inc;.\Hardware;.\MotorControl;.\USER</IncludePath>
+              <IncludePath>.\STARTUP;.\FWLIB\inc;.\SYSTEM\delay;.\SYSTEM\sys;.\USB_App\inc;.\USB_Device\inc;.\USB_Driver\inc;.\Hardware;.\MotorControl;.\USER;.\SEGGER;.\SEGGER\RTT;.\SEGGER\Config;.\SEGGER\Syscalls</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -777,6 +777,21 @@
         </Group>
         <Group>
           <GroupName>FreeRTOS</GroupName>
+        </Group>
+        <Group>
+          <GroupName>SEGGER_RTT</GroupName>
+          <Files>
+            <File>
+              <FileName>SEGGER_RTT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\SEGGER\RTT\SEGGER_RTT.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT_printf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\SEGGER\RTT\SEGGER_RTT_printf.c</FilePath>
+            </File>
+          </Files>
         </Group>
       </Groups>
     </Target>

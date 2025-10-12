@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "usart2.h"
 
+u8 usart2_baudrate = 3; //usart2波特率
 /********************************************************************/
 char snd2_buff[USART2_BUFFER_SIZE];
 char rcv2_buff[USART2_BUFFER_SIZE];
@@ -123,6 +124,38 @@ void USART2_Init(unsigned long bound)
 	DMA_Cmd(DMA1_Stream5,ENABLE);
 }
 
+void usart2_set_baud(u8 bound){
+	switch (bound)
+	{
+	case baudrate_2400:
+		USART2_Init(2400);
+		/* code */
+		break;
+	case baudrate_4800:
+		USART2_Init(4800);
+		break;
+	case baudrate_9600:
+		USART2_Init(9600);
+		break;
+	case baudrate_115200:
+		USART2_Init(115200);
+		break;
+	case baudrate_230400:
+		USART2_Init(230400);
+		break;
+
+	case baudrate_460800:
+		USART2_Init(460800);
+		break;
+
+	case baudrate_921600:
+		USART2_Init(921600);
+		break;
+
+	default:
+		break;
+	}
+}
 /**************************************************************************
 Function: Serial port 2 initialization
 Input   : none

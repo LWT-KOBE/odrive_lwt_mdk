@@ -55,13 +55,13 @@
 .\objects\traptraj.o: .\SYSTEM\delay\delay.h
 .\objects\traptraj.o: .\SYSTEM\sys\sys.h
 .\objects\traptraj.o: .\Hardware\usart2.h
+.\objects\traptraj.o: .\USER\MyProject.h
 .\objects\traptraj.o: .\Hardware\timer.h
 .\objects\traptraj.o: .\Hardware\adc.h
 .\objects\traptraj.o: .\Hardware\spi3.h
 .\objects\traptraj.o: .\MotorControl\utils.h
 .\objects\traptraj.o: .\MotorControl\arm_cos_f32.h
 .\objects\traptraj.o: .\MotorControl\foc.h
-.\objects\traptraj.o: .\USER\MyProject.h
 .\objects\traptraj.o: .\MotorControl\open_loop_controller.h
 .\objects\traptraj.o: .\MotorControl\board.h
 .\objects\traptraj.o: .\MotorControl\motor.h
@@ -72,3 +72,7 @@
 .\objects\traptraj.o: .\MotorControl\flash_writer.h
 .\objects\traptraj.o: .\MotorControl\anticogging.h
 .\objects\traptraj.o: .\Hardware\vofa.h
+.\objects\traptraj.o: .\Hardware\can.h
+.\objects\traptraj.o: .\SEGGER\RTT\SEGGER_RTT.h
+.\objects\traptraj.o: .\SEGGER\RTT\../Config/SEGGER_RTT_Conf.h
+.\objects\traptraj.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h

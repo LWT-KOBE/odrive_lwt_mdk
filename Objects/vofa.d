@@ -56,13 +56,13 @@
 .\objects\vofa.o: .\SYSTEM\delay\delay.h
 .\objects\vofa.o: .\SYSTEM\sys\sys.h
 .\objects\vofa.o: .\Hardware\usart2.h
+.\objects\vofa.o: .\USER\MyProject.h
 .\objects\vofa.o: .\Hardware\timer.h
 .\objects\vofa.o: .\Hardware\adc.h
 .\objects\vofa.o: .\Hardware\spi3.h
 .\objects\vofa.o: .\MotorControl\utils.h
 .\objects\vofa.o: .\MotorControl\arm_cos_f32.h
 .\objects\vofa.o: .\MotorControl\foc.h
-.\objects\vofa.o: .\USER\MyProject.h
 .\objects\vofa.o: .\MotorControl\open_loop_controller.h
 .\objects\vofa.o: .\MotorControl\board.h
 .\objects\vofa.o: .\MotorControl\motor.h
@@ -72,3 +72,7 @@
 .\objects\vofa.o: .\MotorControl\controller.h
 .\objects\vofa.o: .\MotorControl\flash_writer.h
 .\objects\vofa.o: .\MotorControl\anticogging.h
+.\objects\vofa.o: .\Hardware\can.h
+.\objects\vofa.o: .\SEGGER\RTT\SEGGER_RTT.h
+.\objects\vofa.o: .\SEGGER\RTT\../Config/SEGGER_RTT_Conf.h
+.\objects\vofa.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h

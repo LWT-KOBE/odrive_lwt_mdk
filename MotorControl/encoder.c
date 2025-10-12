@@ -1,7 +1,10 @@
 
 #include "MyProject.h"
 
-
+// 用于霍尔编码器
+const GPIO_TypeDef* GPIOs_to_samp[] = { GPIOA, GPIOB, GPIOC };
+const int num_GPIO = 3;
+uint16_t GPIO_port_samples[num_GPIO]; // 采样的端口是A、B、C
 /*****************************************************************************/
 // //GPIO1为CS
 // #define  SPI_CS0_L   GPIO_ResetBits(GPIOA, GPIO_Pin_0)
@@ -59,6 +62,83 @@ void update_pll_gains(void)
 }
 /*****************************************************************************/
 
+//解码霍尔传感器的状态，将状态值转换为对应的霍尔计数值
+static bool decode_hall(uint8_t hall_state, int32_t* hall_cnt) {
+
+    switch(hall_state) // 132645是120°安装的霍尔逆时针（正转）顺序
+    {
+        case 1: //0b001
+            *hall_cnt = 0;
+            break;
+        case 3: //0b011
+            *hall_cnt = 1;
+            break;
+        case 2: //0b010
+            *hall_cnt = 2;
+            break;
+        case 6: //0b110
+            *hall_cnt = 3;
+            break;
+        case 4: //0b100
+            *hall_cnt = 4;
+            break;
+        case 5: //0b101
+            *hall_cnt = 5;
+            break;
+        default:
+            return false;
+    }
+    return true;
+}
+
+HALL_State HALL_GETState(void){
+	uint8_t hall_a =  GPIO_ReadInputDataBit(hallA_port_, hallA_gpio_);
+	uint8_t hall_b =  GPIO_ReadInputDataBit(hallB_port_, hallB_gpio_);
+	uint8_t hall_c =  GPIO_ReadInputDataBit(hallC_port_, hallC_gpio_);
+	
+	if(hall_a == 1 && hall_b == 0 && hall_c == 1) return HALL_STATE_1;
+	else if(hall_a == 1 && hall_b == 0 && hall_c == 0) return HALL_STATE_2;
+	else if(hall_a == 1 && hall_b == 1 && hall_c == 0) return HALL_STATE_3;
+	else if(hall_a == 0 && hall_b == 1 && hall_c == 0) return HALL_STATE_4;
+	else if(hall_a == 0 && hall_b == 1 && hall_c == 1) return HALL_STATE_5;
+	else if(hall_a == 0 && hall_b == 0 && hall_c == 1) return HALL_STATE_6;
+	else return HALL_STATE_1; //default
+}
+
+//将三个霍尔传感器的采样值解码为霍尔状态
+void decode_hall_samples()
+{
+    GPIO_TypeDef* hall_ports[] =
+    {
+        hallA_port_,
+        hallB_port_,
+        hallC_port_,
+    };
+    uint16_t hall_pins[] =
+    {
+        hallA_gpio_,
+        hallB_gpio_,
+		hallC_gpio_,
+    };
+
+    uint8_t hall_state = 0x0;
+    for(int i = 0; i < 3; ++i)
+    {
+        int port_idx = 0;
+        for(;;)
+        {
+            const GPIO_TypeDef* port = GPIOs_to_samp[port_idx];
+            if(port == hall_ports[i])
+                break;
+            ++port_idx;
+        }
+
+        hall_state <<= 1;
+        hall_state |= (GPIO_port_samples[port_idx] & hall_pins[i]) ? 1 : 0;
+    }
+    encoder_config.hall_state_ = hall_state;
+}
+
 /*****************************************************************************/
 //初始化三种SPI接口的编码器的参数, 初始化I2C接口或者SPI接口
 void MagneticSensor_Init(void)
@@ -87,6 +167,9 @@ void MagneticSensor_Init(void)
 		case MODE_INCREMENTAL:
 			TIM3_Encoder_Init();         //ABZ
 			break;
+		case MODE_HALL:
+			TIM3_InputCapture_Config(); //HALL
+			break;  					
 		case MODE_SPI_AS5047P:
 			SPI3_Init_(SPI_CPOL_Low);    //AS5047P
 			break;
@@ -326,6 +409,8 @@ void sample_now(void)
 	}
 }
 /****************************************************************************/
+
+#if 0
 bool encoder_update(void)
 {
 	// update internal encoder state.
@@ -453,6 +538,165 @@ bool encoder_update(void)
 	
 	return 1;
 }
+#else
+bool encoder_update(void)
+{
+    // 更新内部编码器状态
+    int32_t delta_enc = 0;  // 编码器计数变化量
+    int32_t pos_abs_latched = pos_abs_; // 锁存绝对位置值
+    
+    // 根据编码器配置模式进行处理
+    switch(encoder_config.mode)
+    {
+        case MODE_INCREMENTAL: {  // 增量式编码器模式
+            // TODO: 使用count_in_cpr_代替shadow_count_，因为shadow_count_可能溢出，或者使用64位
+            // 计算两次采样之间的编码器计数变化量（16位有符号差值）
+            int16_t delta_enc_16 = (int16_t)tim_cnt_sample_ - (int16_t)shadow_count_;
+            delta_enc = (int32_t)delta_enc_16; // 符号扩展为32位
+        } break;
+        
+        // 各种SPI绝对式编码器模式
+        case MODE_SPI_AS5047P:
+        case MODE_SPI_MT6701:
+        case MODE_SPI_MA730:
+        case MODE_SPI_TLE5012B:
+        case MODE_SPI_MT6835: {
+            // 检查绝对位置是否已更新（正常情况下每次应为true，因为sample_now()刚被执行过）
+            if(abs_spi_pos_updated_ == false)  
+            {
+                // 对错误进行低通滤波
+                spi_error_rate_ += current_meas_period * (1.0f - spi_error_rate_);
+                // 如果错误率超过阈值
+                if (spi_error_rate_ > 0.05f)
+                {
+                    // 设置编码器错误标志
+                    encoder_set_error(ERROR_ABS_SPI_COM_FAIL);
+                    return 0;  // 返回失败
+                }
+            }
+            else
+            {
+                // 对错误进行低通滤波（无错误时）
+                spi_error_rate_ += current_meas_period * (0.0f - spi_error_rate_);
+            }
+            
+            // 重置绝对位置更新标志
+            abs_spi_pos_updated_ = false;
+            // 计算绝对位置与CPR内位置的差值
+            delta_enc = pos_abs_latched - count_in_cpr_; //LATCH
+            // 对差值进行模运算（保持在CPR范围内）
+            delta_enc = mod(delta_enc, encoder_config.cpr);
+            // 处理差值，确保在[-CPR/2, CPR/2]范围内
+            if(delta_enc > encoder_config.cpr/2) delta_enc -= encoder_config.cpr;
+        } break;
+        
+        default:  // 不支持的编码器模式
+            encoder_set_error(ERROR_UNSUPPORTED_ENCODER_MODE);
+            return 0;  // 返回失败
+    }
+    
+    // 更新影子计数器和CPR内计数
+    shadow_count_ += delta_enc;
+    count_in_cpr_ += delta_enc;
+    // 确保count_in_cpr_在CPR范围内
+    count_in_cpr_ = mod(count_in_cpr_, encoder_config.cpr);
+    
+    // 对于SPI绝对式编码器，直接使用锁存的绝对位置
+    if((encoder_config.mode==MODE_SPI_AS5047P)||(encoder_config.mode==MODE_SPI_MT6701)||
+       (encoder_config.mode==MODE_SPI_MA730)||(encoder_config.mode==MODE_SPI_TLE5012B)||
+       (encoder_config.mode==MODE_SPI_MT6835))
+        count_in_cpr_ = pos_abs_latched;
+    
+    // 保存上一次的CPR内位置（用于计算循环位置）
+    float pos_cpr_counts_last = pos_cpr_counts_;
+    
+    // 运行PLL（锁相环，单位是编码器计数）
+    // 预测当前位置
+    pos_estimate_counts_ += current_meas_period * vel_estimate_counts_;
+    pos_cpr_counts_      += current_meas_period * vel_estimate_counts_;
+    
+    // 离散相位检测器
+    float delta_pos_counts = (float)(shadow_count_ - (int32_t)pos_estimate_counts_);
+    float delta_pos_cpr_counts = (float)(count_in_cpr_ - (int32_t)pos_cpr_counts_);
+    // 对CPR内位置差值进行环绕处理
+    delta_pos_cpr_counts = wrap_pm(delta_pos_cpr_counts, (float)(encoder_config.cpr));
+    
+    // PLL反馈
+    pos_estimate_counts_ += current_meas_period * pll_kp_ * delta_pos_counts;
+    pos_cpr_counts_ += current_meas_period * pll_kp_ * delta_pos_cpr_counts;
+    // 确保CPR内位置在[0, CPR)范围内
+    pos_cpr_counts_ = fmodf_pos(pos_cpr_counts_, (float)(encoder_config.cpr));
+    // 更新速度估计
+    vel_estimate_counts_ += current_meas_period * pll_ki_ * delta_pos_cpr_counts;
+    
+    // 检查是否需要将速度归零（防止抖动）
+    uint8_t snap_to_zero_vel = false;
+    if (fabsf(vel_estimate_counts_) < 0.5f * current_meas_period * pll_ki_)
+    {
+        vel_estimate_counts_ = 0.0f;  // 将delta-sigma对齐到零以防止抖动
+        snap_to_zero_vel = true;
+    }
+    
+    // 为控制器提供编码器输出
+    // 位置估计（归一化到[0,1)）
+    pos_estimate_ = pos_estimate_counts_ / (float)encoder_config.cpr;
+    // 速度估计（归一化）
+    vel_estimate_ = vel_estimate_counts_ / (float)encoder_config.cpr;
+    
+    // 计算循环位置（用于多圈应用）
+    // TODO: 应该严格要求这个值来自上一次迭代，以避免失控情况
+    float pos_circular = pos_circular_;  // 获取上一次的循环位置
+    // 计算位置变化并处理环绕
+    pos_circular += wrap_pm((pos_cpr_counts_ - pos_cpr_counts_last) / (float)encoder_config.cpr, 1.0f);
+    // 确保循环位置在设定范围内
+    pos_circular = fmodf_pos(pos_circular, ctrl_config.circular_setpoint_range);
+    pos_circular_ = pos_circular;  // 更新循环位置
+    
+    // 运行编码器计数插值
+    int32_t corrected_enc = count_in_cpr_ - encoder_config.phase_offset;
+    // 如果停止或禁用相位插值，重置插值
+    if(snap_to_zero_vel || !encoder_config.enable_phase_interpolation)
+    {
+        interpolation_ = 0.5f;
+        // TODO: 这不完全正确。在高速时，这个计数的第一个相位可能不在边缘
+    }
+    // 如果编码器计数增加，重置插值为0
+    else if(delta_enc > 0){
+        interpolation_ = 0.0f;
+    }
+    // 如果编码器计数减少，重置插值为1
+    else if(delta_enc < 0){
+        interpolation_ = 1.0f;
+    }
+    // 否则根据速度估计进行插值
+    else {
+        // 使用速度估计在编码器计数之间插值（预测）
+        interpolation_ += current_meas_period * vel_estimate_counts_;
+        // 确保插值位置在[enc, enc+1)范围内
+        if (interpolation_ > 1.0f) interpolation_ = 1.0f;
+        if (interpolation_ < 0.0f) interpolation_ = 0.0f;
+    }
+    // 计算插值后的编码器位置
+    float interpolated_enc = corrected_enc + interpolation_;
+    
+    // 计算电角度
+    // 计算每个编码器计数对应的电角度弧度数
+    float elec_rad_per_enc = motor_config.pole_pairs * 2 * M_PI * (1.0f / (float)(encoder_config.cpr));
+    // 计算相位角度
+    float ph = elec_rad_per_enc * (interpolated_enc - encoder_config.phase_offset_float);
+    
+    // 只有在校准完成后才更新角度
+    if(is_ready_)
+    {
+        // 处理相位角度到[-π, π]范围并考虑方向
+        encoder_config.phase_ = wrap_pm_pi(ph) * encoder_config.direction;
+        // 计算电角速度（考虑极对数和方向）
+        encoder_config.phase_vel_ = (2*M_PI) * vel_estimate_ * motor_config.pole_pairs * encoder_config.direction;
+    }
+    
+    return 1;  // 返回成功
+}
+#endif
 /****************************************************************************/
 
 

@@ -17,26 +17,34 @@ Library Manager: ArmAr.exe V5.06 update 7 (build 960)
 Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
 CPU DLL:         SARMCM3.DLL V5.36.0.0
 Dialog DLL:      DCM.DLL V1.17.3.0
-Target DLL:      CMSIS_AGDI.dll V1.33.0.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.9.0
 Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
 F:\ODRIVE_LWT\odrive_lwt_mdk\motorF4.uvprojx
-Project File Date:  08/30/2025
+Project File Date:  10/12/2025
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Target 1'
-compiling can.c...
-Hardware\can.h(13): warning:  #1-D: last line of file ends without a newline
-  #endif
-Hardware\can.c(99): warning:  #1-D: last line of file ends without a newline
-  }
-Hardware\can.c: 2 warnings, 0 errors
+compiling timer.c...
+Hardware\timer.c(237): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      float resistance = (3.3 - voltage) * 10000 / voltage;
+Hardware\timer.c(238): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      float steinhart = resistance / 10000.0;
+Hardware\timer.c(240): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      steinhart = 1.0 / (0.001129148 + 0.000234125 * steinhart +
+Hardware\timer.c(242): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      return steinhart - 273.15; // 开尔文转摄氏度
+Hardware\timer.c(285): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+     		Rt=(3.3-VR)*10000/VR;//计算Rt
+Hardware\timer.c(282): warning:  #550-D: variable "temp"  was set but never used
+  		float temp=0;//温度�?
+Hardware\timer.c: 6 warnings, 0 errors
 linking...
-Program Size: Code=43376 RO-data=2612 RW-data=744 ZI-data=21160  
+Program Size: Code=51744 RO-data=2680 RW-data=1064 ZI-data=21944  
 FromELF: creating hex file...
-".\Objects\motorF4.axf" - 0 Error(s), 2 Warning(s).
+".\Objects\motorF4.axf" - 0 Error(s), 6 Warning(s).
 
 <h2>Software Packages used:</h2>
 

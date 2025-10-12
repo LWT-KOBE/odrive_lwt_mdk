@@ -55,13 +55,13 @@
 .\objects\anticogging.o: .\SYSTEM\delay\delay.h
 .\objects\anticogging.o: .\SYSTEM\sys\sys.h
 .\objects\anticogging.o: .\Hardware\usart2.h
+.\objects\anticogging.o: .\USER\MyProject.h
 .\objects\anticogging.o: .\Hardware\timer.h
 .\objects\anticogging.o: .\Hardware\adc.h
 .\objects\anticogging.o: .\Hardware\spi3.h
 .\objects\anticogging.o: .\MotorControl\utils.h
 .\objects\anticogging.o: .\MotorControl\arm_cos_f32.h
 .\objects\anticogging.o: .\MotorControl\foc.h
-.\objects\anticogging.o: .\USER\MyProject.h
 .\objects\anticogging.o: .\MotorControl\open_loop_controller.h
 .\objects\anticogging.o: .\MotorControl\board.h
 .\objects\anticogging.o: .\MotorControl\motor.h
@@ -72,3 +72,7 @@
 .\objects\anticogging.o: .\MotorControl\flash_writer.h
 .\objects\anticogging.o: .\MotorControl\anticogging.h
 .\objects\anticogging.o: .\Hardware\vofa.h
+.\objects\anticogging.o: .\Hardware\can.h
+.\objects\anticogging.o: .\SEGGER\RTT\SEGGER_RTT.h
+.\objects\anticogging.o: .\SEGGER\RTT\../Config/SEGGER_RTT_Conf.h
+.\objects\anticogging.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h

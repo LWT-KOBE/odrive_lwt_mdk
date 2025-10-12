@@ -1,4 +1,3 @@
-
 #ifndef __ENCODER_LIB_H
 #define __ENCODER_LIB_H
 
@@ -15,12 +14,27 @@
 typedef enum
 {
 	MODE_INCREMENTAL = 0,
+	MODE_HALL,
 	MODE_SPI_AS5047P,
 	MODE_SPI_MT6701,
 	MODE_SPI_MA730,
 	MODE_SPI_TLE5012B,
 	MODE_SPI_MT6835,
 } ENCODER_enum;
+
+typedef enum {
+	HALL_STATE_1 = 0,
+	
+	HALL_STATE_2,
+	
+	HALL_STATE_3,
+	
+	HALL_STATE_4,
+	
+	HALL_STATE_5,
+	
+	HALL_STATE_6
+} HALL_State;
 
 typedef struct 
 {
@@ -45,6 +59,7 @@ typedef struct
 	bool find_idx_on_lockin_only;     // Only be sensitive during lockin scan constant vel state
 	float phase_;              //最终用于计算的当前电角度，范围-Pi~Pi。
 	float phase_vel_;          //最终用于计算的当前电角速度，单位rad/s。
+	uint8_t hall_state_; // bit[0] = HallA, .., bit[2] = HallC
 } ENCODER_CONFIG;
 
 extern  ENCODER_CONFIG   encoder_config;
@@ -57,6 +72,7 @@ void MagneticSensor_Init(void);
 bool run_offset_calibration(void);
 void sample_now(void);
 bool encoder_update(void);
+HALL_State HALL_GETState(void);
 /****************************************************************************/
 
 #endif

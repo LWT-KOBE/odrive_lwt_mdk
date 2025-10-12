@@ -104,7 +104,10 @@ bool FOC_current(float Id_des, float Iq_des, float I_phase, float pwm_phase)   /
 	
 	// Vector modulation saturation, lock integrator if saturated
 	// TODO make maximum modulation configurable
-	float mod_scalefactor = 0.80f * sqrt3_by_2 * 1.0f / sqrtf(mod_d * mod_d + mod_q * mod_q);
+	// float mod_scalefactor = 0.80f * sqrt3_by_2 * 1.0f / sqrtf(mod_d * mod_d + mod_q * mod_q);
+	// 修改为下面的，增加了对d轴分量的限制
+	// 这样可以在大电流时，q轴分量不受限制地增大，从而增大转矩
+	float mod_scalefactor = 1.0f * sqrt3_by_2 * 1.0f / sqrtf(mod_d * mod_d + mod_q * mod_q);
 	if (mod_scalefactor < 1.0f)
 	{
 		mod_d *= mod_scalefactor;
