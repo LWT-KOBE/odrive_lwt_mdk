@@ -1,7 +1,15 @@
 
 #include "MyProject.h"
 
-
+//volatile uint8_t JS_RTT_BufferUp1[2048] = {0,};
+//const uint8_t JS_RTT_Channel = 1;
+//typedef struct {
+//    volatile float msg1;
+//    volatile float msg2;
+//	volatile float msg3;
+//	volatile float msg4;
+//}RTT_MSG_U1I1;
+//RTT_MSG_U1I1 rtt_JsMsg,rtt_JsMsg2;
 /*****************************************************************************
 ****************************************************************************/
 __ALIGN_BEGIN USB_OTG_CORE_HANDLE    USB_OTG_dev __ALIGN_END ;
@@ -124,10 +132,16 @@ int main(void)
 	USART2_SendDMA(sprintf(snd2_buff,"Motor Ready!\r\n"));
 	//在MyProject.h中设置电机参数和控制模式。参数设置与官方代码一致，请先熟悉官方odrivetool的操作
 	//发送指令“C”，测量电机的电阻电感并校准电机，发送指令“G”进入闭环，然后设置对应的速度或者位置
-	
+//	SEGGER_RTT_ConfigUpBuffer(1,                  // 通道号
+//                            // 通道名字（命名有意义的，一定要按照官方文档“RTT channel naming convention”的规范来）
+//                            "JScope_f4f4f4f4",              // 数据包含1个32位的时间戳与1个uint32_t变量、1个uint32_t变量
+//                            (uint8_t*)&JS_RTT_BufferUp1[0], // 缓存地址
+//                            sizeof(JS_RTT_BufferUp1),       // 缓存大小
+//                            SEGGER_RTT_MODE_NO_BLOCK_SKIP); // 非阻塞
 	while(1)
 	{
 		run_state_machine_loop();
+		
 		delay_us(1000);     //1ms，延时增加通信的可靠性
 	}
 }
@@ -220,6 +234,25 @@ void commander_run(void)
 /*****************************************************************************/
 //USB虚拟串口通信
 //放在USB接收中断里处理 App/usbd_cdc_vcp.c文件中的VCP_DataRx()函数中
+
+u8 send_mode(void){
+	if(ctrl_config.control_mode == CONTROL_MODE_POSITION_CONTROL && ctrl_config.input_mode == INPUT_MODE_TRAP_TRAJ){
+		return 0; //位置梯形模式
+	}else if(ctrl_config.control_mode == CONTROL_MODE_POSITION_CONTROL && ctrl_config.input_mode == INPUT_MODE_POS_FILTER){
+		return 1; //位置滤波模式
+	}else if(ctrl_config.control_mode == CONTROL_MODE_POSITION_CONTROL && ctrl_config.input_mode == INPUT_MODE_PASSTHROUGH){
+		return 2; //位置直通模式
+	}else if(ctrl_config.control_mode == CONTROL_MODE_VELOCITY_CONTROL && ctrl_config.input_mode == INPUT_MODE_VEL_RAMP){
+		return 3; //速度斜坡模式
+	}else if(ctrl_config.control_mode == CONTROL_MODE_VELOCITY_CONTROL && ctrl_config.input_mode == INPUT_MODE_PASSTHROUGH){
+		return 4; //速度直通模式
+	}else if(ctrl_config.control_mode == CONTROL_MODE_TORQUE_CONTROL && ctrl_config.input_mode == INPUT_MODE_TORQUE_RAMP){
+		return 5; //力矩斜坡模式
+	}else if(ctrl_config.control_mode == CONTROL_MODE_TORQUE_CONTROL && ctrl_config.input_mode == INPUT_MODE_PASSTHROUGH){
+		return 6; //力矩直通模式
+	}
+}
+
 void Send_Configuration(void){
 	DeviceFrame.fdata[0] = OD_CANID;  //CAN的ID
 	DeviceFrame.fdata[1] = OD_CAN_BaudRate;  //CAN的波特率
@@ -256,6 +289,8 @@ void Send_Configuration(void){
 	DeviceFrame.fdata[31] = encoder_config.phase_offset_float;//偏移值 小数部分
 	DeviceFrame.fdata[32] = axis_config.startup_closed_loop_control;      //是否上电后进入闭环
 	DeviceFrame.fdata[33] = anticogging_valid_;                           //抗齿槽校准数据是否正常标志位
+	DeviceFrame.fdata[34] = send_mode();         //控制模式
+	DeviceFrame.fdata[35] = current_state_;
 
 
 	usb_send((uint8_t *) (&DeviceFrame), sizeof(DeviceFrame));
@@ -431,7 +466,7 @@ void USBcommander_run(void)
 				
 				switch(mode){
 					case 0:
-						// 电压控制模式
+						// 位置控制模式
 						ctrl_config.control_mode = CONTROL_MODE_POSITION_CONTROL;
 						// 梯形轨迹模式
 						ctrl_config.input_mode = INPUT_MODE_TRAP_TRAJ;

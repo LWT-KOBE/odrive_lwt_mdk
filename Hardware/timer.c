@@ -1,6 +1,15 @@
 #include "MyProject.h"
 #include "timer.h"
 /*****************************************************************************/
+volatile uint8_t JS_RTT_BufferUp1[2048] = {0,};
+const uint8_t JS_RTT_Channel = 1;
+typedef struct {
+    volatile float msg1;
+    volatile float msg2;
+	volatile float msg3;
+	volatile float msg4;
+}RTT_MSG_U1I1;
+RTT_MSG_U1I1 rtt_JsMsg,rtt_JsMsg2;
 void TIM1_PWM_Init(void)
 {
 	NVIC_InitTypeDef          NVIC_InitStructure;
@@ -222,15 +231,7 @@ void TIM7_Init(void)
 int time_cnt = 0;
 int enc_cnt = 0;
 
-typedef struct Val
-{
-	int val1;
-	int val2;
-}Valt;
 
-char JS_RTT_UpBuff[4096];
-u8 JS_RTT_Channel=1;
-char JS_RTT_DownBuff[4096];
 
 float Calculate_Temperature(uint16_t adc_value) {
 	float voltage = (float)adc_value * VREF / ADC_RES;
@@ -265,12 +266,17 @@ float adc_to_temperature(uint16_t adc_value) {
 
 void TIM7_IRQHandler(void)
 {
-	Valt test;
 	static u8 c = 0;
 	if (TIM_GetITStatus(TIM7, TIM_IT_Update) != RESET)
 	{	
 		if(c == 0){
 		    c = 1;
+			SEGGER_RTT_ConfigUpBuffer(1,                  // 通道号
+                            // 通道名字（命名有意义的，一定要按照官方文档“RTT channel naming convention”的规范来）
+                            "JScope_f4f4f4f4",              // 数据包含1个32位的时间戳与1个uint32_t变量、1个uint32_t变量
+                            (uint8_t*)&JS_RTT_BufferUp1[0], // 缓存地址
+                            sizeof(JS_RTT_BufferUp1),       // 缓存大小
+                            SEGGER_RTT_MODE_NO_BLOCK_SKIP); // 非阻塞
 			//SEGGER_RTT_ConfigUpBuffer(JS_RTT_Channel, "JScope_t4i4i4", &JS_RTT_UpBuff[0], sizeof(JS_RTT_UpBuff), SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
 		}
 		float Rt=0;   //NTC电阻
@@ -284,10 +290,13 @@ void TIM7_IRQHandler(void)
 		VR=(float) (adc1_value[0]/4095*3.3); //转换成电压值
    		Rt=(3.3-VR)*10000/VR;//计算Rt
    		temp=1/(1/T0+log(Rt/R)/B)-Ka+0.5; //计算温度
-
-		test.val1 +=8;
-		test.val2 +=4;
-		// SEGGER_RTT_Write(JS_RTT_Channel, &test, sizeof(test));	/* 上传数据 */
+		
+		rtt_JsMsg.msg1 = pos_estimate_;
+		rtt_JsMsg.msg2 = vbus_voltage;
+		rtt_JsMsg.msg3 = vel_estimate_;
+		rtt_JsMsg.msg4 = input_vel_;
+		SEGGER_RTT_Write(JS_RTT_Channel, &rtt_JsMsg, sizeof(rtt_JsMsg));	/* 上传数据 */
+		
 		time_cnt++;
 		//enc_cnt = HALL_GETState();
 		
