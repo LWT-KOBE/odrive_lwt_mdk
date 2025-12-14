@@ -71,8 +71,16 @@
 .\objects\encoder.o: .\MotorControl\controller.h
 .\objects\encoder.o: .\MotorControl\flash_writer.h
 .\objects\encoder.o: .\MotorControl\anticogging.h
+.\objects\encoder.o: .\MotorControl\ntc.h
 .\objects\encoder.o: .\Hardware\vofa.h
 .\objects\encoder.o: .\Hardware\can.h
 .\objects\encoder.o: .\SEGGER\RTT\SEGGER_RTT.h
 .\objects\encoder.o: .\SEGGER\RTT\../Config/SEGGER_RTT_Conf.h
 .\objects\encoder.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\encoder.o: .\Communication\communication_usb.h
+.\objects\encoder.o: .\Communication\communication_usart.h
+.\objects\encoder.o: .\Communication\communication_can.h
+.\objects\encoder.o: .\Scheduler\scheduler.h
+.\objects\encoder.o: .\Scheduler\debug.h
+.\objects\encoder.o: .\IAP\IAP.h
+.\objects\encoder.o: .\Hardware\dwt.h

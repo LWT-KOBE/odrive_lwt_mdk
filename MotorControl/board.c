@@ -1,6 +1,14 @@
 
 #include "MyProject.h"
-
+volatile uint8_t JS_RTT_BufferUp1[2048] = {0,};
+const uint8_t JS_RTT_Channel = 1;
+typedef struct {
+    volatile uint32_t timestamp;
+    volatile float msg2;
+	volatile float msg3;
+	volatile float msg4;
+}RTT_MSG_U1I1;
+RTT_MSG_U1I1 rtt_JsMsg,rtt_JsMsg2;
 
 /****************************************************************************/
 #define  CURRENT_SENSE_MIN_VOLT  0.3f
@@ -53,15 +61,13 @@ uint8_t fetch_and_reset_adcs(Iph_ABC_t *current)
 #define LED_blink   GPIOD->ODR^=(1<<2)  //PD2
 /****************************************************************************/
 uint32_t time_cntr=0;
-u8 can_temp[8];
 volatile uint32_t timestamp_ = 0;
-extern  void control_loop_cb(void);  //在main.c文件中
+
 
 //中断频率16KHz，进入中断的同时触发ADC
 void TIM1_UP_TIM10_IRQHandler(void)
 {
 	uint32_t i;
-	//CAN1_Send_Msg(can_temp,8);
 	TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 	timestamp_ += TIM_1_8_PERIOD_CLOCKS * (TIM_1_8_RCR + 1);
 	
@@ -70,7 +76,8 @@ void TIM1_UP_TIM10_IRQHandler(void)
 //		time_cntr = 0;
 //		LED_blink;
 //	}
-	
+	// Scheduler_Tick_Handler(); // 调度器滴答处理函数，每625us调用一次
+
 	uint8_t counting_down = TIM1->CR1 & TIM_CR1_DIR;
 	if(!counting_down)   //=0为递增计数,上臂为低下臂为高,此时采样
 	{
@@ -86,10 +93,60 @@ void TIM1_UP_TIM10_IRQHandler(void)
 		dc_calib_cb(&current0);  //timestamp_ + TIM_1_8_PERIOD_CLOCKS * (TIM_1_8_RCR + 1), 
 		pwm_update_cb();         //timestamp_ + 3 * TIM_1_8_PERIOD_CLOCKS * (TIM_1_8_RCR + 1);
 	}
-	
-	
-	
+
+	if(time_cntr == 0){
+		    time_cntr = 1;
+			SEGGER_RTT_ConfigUpBuffer(1,                  // 通道号
+                            // 通道名字（命名有意义的，一定要按照官方文档“RTT channel naming convention”的规范来）
+                            "JScope_t4f4f4f4",              // 数据包含1个32位的时间戳与1个uint32_t变量、1个uint32_t变量
+                            (uint8_t*)&JS_RTT_BufferUp1[0], // 缓存地址
+                            sizeof(JS_RTT_BufferUp1),       // 缓存大小
+                            SEGGER_RTT_MODE_NO_BLOCK_SKIP); // 非阻塞
+			//SEGGER_RTT_ConfigUpBuffer(JS_RTT_Channel, "JScope_t4i4i4", &JS_RTT_UpBuff[0], sizeof(JS_RTT_UpBuff), SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
+		}
+		
+
+		rtt_JsMsg.timestamp = DWT_Get_Microsecond(); // 从dwt定时器获取时间戳;
+		rtt_JsMsg.msg2 = pos_estimate_;
+		rtt_JsMsg.msg3 = vel_estimate_;
+		rtt_JsMsg.msg4 = input_vel_;
+		SEGGER_RTT_Write(JS_RTT_Channel, &rtt_JsMsg, sizeof(rtt_JsMsg));	/* 上传数据 */
+
 }
+
+/****************************************************************************/
+uint32_t print_flag;
+
+void control_loop_cb(void)
+{
+	encoder_update();
+	controller_update();
+	openloop_controller_update();
+	motor_update();
+	foc_update();
+	
+	if((motor_error!=0)&&(print_flag==0))
+	{
+		print_flag=1;  //只打印一次
+		disarm();
+		
+		USART2_SendDMA(sprintf(snd2_buff,"error:0x%X\r\n", motor_error));      //串口打印
+		uint32_t len=sprintf((char *)usb_sndbuff,"error:0x%X\r\n", motor_error); //虚拟串口打印
+		usb_send(usb_sndbuff, len);
+	}
+}
+/*****************************************************************************/
+//擦除指令，擦除扇区后复位
+//看门狗使用32KHz时钟，32分频，计数500，大概0.5秒复位
+void IWDG_Init(void)
+{
+	IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable); //取消寄存器写保护
+	IWDG_SetPrescaler(IWDG_Prescaler_32); //设置 IWDG 分频系数
+	IWDG_SetReload(500);     //设置 IWDG 装载值
+	IWDG_ReloadCounter();    //reload
+	IWDG_Enable();           //使能看门狗
+}
+
 /****************************************************************************/
 
 

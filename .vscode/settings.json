@@ -11,6 +11,11 @@
         "axis.h": "c",
         "anticogging.h": "c",
         "open_loop_controller.h": "c",
-        "adc.h": "c"
+        "adc.h": "c",
+        "communication_usb.h": "c",
+        "communication_can.h": "c",
+        "communication_usart.h": "c",
+        "scheduler.h": "c",
+        "ntc.h": "c"
     }
 }

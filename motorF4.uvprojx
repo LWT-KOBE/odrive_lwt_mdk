@@ -80,9 +80,9 @@
             <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>fromelf --bin -o ".\bin_file\@L.bin" "#L"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER,USE_USB_OTG_FS</Define>
               <Undefine></Undefine>
-              <IncludePath>.\STARTUP;.\FWLIB\inc;.\SYSTEM\delay;.\SYSTEM\sys;.\USB_App\inc;.\USB_Device\inc;.\USB_Driver\inc;.\Hardware;.\MotorControl;.\USER;.\SEGGER;.\SEGGER\RTT;.\SEGGER\Config;.\SEGGER\Syscalls</IncludePath>
+              <IncludePath>.\STARTUP;.\FWLIB\inc;.\SYSTEM\delay;.\SYSTEM\sys;.\USB_App\inc;.\USB_Device\inc;.\USB_Driver\inc;.\Hardware;.\MotorControl;.\USER;.\SEGGER;.\SEGGER\RTT;.\SEGGER\Config;.\SEGGER\Syscalls;.\Scheduler;.\Communication;.\IAP</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -588,40 +588,15 @@
               <FileType>1</FileType>
               <FilePath>.\SYSTEM\sys\sys.c</FilePath>
             </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>hardware</GroupName>
-          <Files>
             <File>
-              <FileName>adc.c</FileName>
+              <FileName>IAP.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Hardware\adc.c</FilePath>
+              <FilePath>.\IAP\IAP.c</FilePath>
             </File>
             <File>
-              <FileName>timer.c</FileName>
+              <FileName>dwt.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Hardware\timer.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Hardware\usart2.c</FilePath>
-            </File>
-            <File>
-              <FileName>spi3.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Hardware\spi3.c</FilePath>
-            </File>
-            <File>
-              <FileName>vofa.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Hardware\vofa.c</FilePath>
-            </File>
-            <File>
-              <FileName>can.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Hardware\can.c</FilePath>
+              <FilePath>.\Hardware\dwt.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -701,6 +676,76 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>SEGGER_RTT</GroupName>
+          <Files>
+            <File>
+              <FileName>SEGGER_RTT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\SEGGER\RTT\SEGGER_RTT.c</FilePath>
+            </File>
+            <File>
+              <FileName>SEGGER_RTT_printf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\SEGGER\RTT\SEGGER_RTT_printf.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Communication</GroupName>
+          <Files>
+            <File>
+              <FileName>communication_usb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Communication\communication_usb.c</FilePath>
+            </File>
+            <File>
+              <FileName>communication_can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Communication\communication_can.c</FilePath>
+            </File>
+            <File>
+              <FileName>communication_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Communication\communication_usart.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>hardware</GroupName>
+          <Files>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>usart2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\usart2.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\spi3.c</FilePath>
+            </File>
+            <File>
+              <FileName>vofa.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\vofa.c</FilePath>
+            </File>
+            <File>
+              <FileName>can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Hardware\can.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>MotorControl</GroupName>
           <Files>
             <File>
@@ -763,6 +808,26 @@
               <FileType>1</FileType>
               <FilePath>.\MotorControl\anticogging.c</FilePath>
             </File>
+            <File>
+              <FileName>ntc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MotorControl\ntc.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Scheduler</GroupName>
+          <Files>
+            <File>
+              <FileName>scheduler.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Scheduler\scheduler.c</FilePath>
+            </File>
+            <File>
+              <FileName>debug.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Scheduler\debug.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -775,24 +840,6 @@
             </File>
           </Files>
         </Group>
-        <Group>
-          <GroupName>FreeRTOS</GroupName>
-        </Group>
-        <Group>
-          <GroupName>SEGGER_RTT</GroupName>
-          <Files>
-            <File>
-              <FileName>SEGGER_RTT.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\SEGGER\RTT\SEGGER_RTT.c</FilePath>
-            </File>
-            <File>
-              <FileName>SEGGER_RTT_printf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\SEGGER\RTT\SEGGER_RTT_printf.c</FilePath>
-            </File>
-          </Files>
-        </Group>
       </Groups>
     </Target>
   </Targets>
@@ -802,5 +849,14 @@
     <components/>
     <files/>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>motorF4</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>

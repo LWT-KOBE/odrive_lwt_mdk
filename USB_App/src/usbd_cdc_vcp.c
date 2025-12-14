@@ -260,6 +260,7 @@ void usb_send(uint8_t *p,u32 num)   //函数声明包含在 usbd_cdc_core.h
 extern uint8_t usb_recbuff[256];
 extern uint32_t usb_rcv_count;
 extern void USBcommander_run(void);  //函数声明
+
 /**
   * @brief  VCP_DataRx
   *         Data received over USB OUT endpoint are sent over CDC interface 

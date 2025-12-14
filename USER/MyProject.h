@@ -9,17 +9,20 @@
 #include <stdbool.h>
 #include <math.h>
 
+// usb相关头文件
 #include "usbd_cdc_core.h"
 #include "usbd_usr.h"
 #include "usb_conf.h"
 #include "usbd_desc.h"
 
+// 系统外设头文件 
 #include "delay.h"
 #include "usart2.h"
 #include "timer.h"
 #include "adc.h"
 #include "spi3.h"
 
+// 电机控制相关头文件
 #include "utils.h"
 #include "arm_cos_f32.h"
 #include "foc.h"
@@ -32,9 +35,18 @@
 #include "controller.h"
 #include "flash_writer.h"
 #include "anticogging.h"
+#include "ntc.h"
+
 #include "vofa.h"
 #include "can.h"
 #include "SEGGER_RTT.h"
+#include "communication_usb.h"
+#include "communication_usart.h"
+#include "communication_can.h"
+#include "scheduler.h"
+#include "debug.h"
+#include "IAP.h"
+#include "dwt.h"
 
 /****************************************************************************/
 #define TIM_1_8_CLOCK_HZ 168000000
@@ -45,15 +57,6 @@
 #define TIM_APB1_DEADTIME_CLOCKS 40  //50=595ns
 #define TIM_1_8_RCR 2
 
-// NTC参数定义
-#define NTC_R25      10000.0f   // 25℃时的电阻值(10K)
-#define NTC_BETA     3950.0f    // B值(3950)
-#define NTC_T25      298.15f    // 25℃对应的开尔文温度(25 + 273.15)
-#define VREF         3.3f       // ADC参考电压(3.3V)
-#define ADC_RES      4095.0f    // 12位ADC分辨率(2^12 - 1)
-
-// 分压电阻值(根据实际电路调整)
-#define VOLTAGE_DIVIDER_R  10000.0f  // 与NTC串联的分压电阻(10K)
 
 // Period in [s]
 #define CURRENT_MEAS_PERIOD ( (float)2*TIM_1_8_PERIOD_CLOCKS*(TIM_1_8_RCR+1) / (float)TIM_1_8_CLOCK_HZ )
@@ -89,7 +92,8 @@ static const int current_meas_hz = CURRENT_MEAS_HZ;
 #define  ERROR_UNKNOWN_PHASE_VEL               (1<<21)
 /****************************************************************************/
 //根据驱动板硬件设置参数
-#define VBUS_S_DIVIDER_RATIO   18.73f    //电源分压电阻2.2k+39k
+//#define VBUS_S_DIVIDER_RATIO   18.73f    //电源分压电阻2.2k+39k
+#define VBUS_S_DIVIDER_RATIO   19.0f    //电源分压电阻1k+18k
 #define SHUNT_RESISTANCE       0.002f    //采样电阻，如果是0.5mΩ=0.0005f,1mΩ=0.001f
 #define PHASE_CURRENT_GAIN     20.0f     //电流采样运放倍数，20倍
 /****************************************************************************/
@@ -123,11 +127,6 @@ static const int current_meas_hz = CURRENT_MEAS_HZ;
 
 //以上为常用参数，更多参数设置请到上电初始化的motor_para_init()、MagneticSensor_Init()、controller_para_init() 这几个函数中设置
 //其它参数，对于大部分电机来说使用默认即可，无需更改
-/*
-这些参数以宏定义的方式设置，简单直观，但是修改的话需要每次都重新烧写代码，非常不方便，
-如果想要像官方代码那样可以修改并保存，只需要添加对应的通信协议，定义保存地址即可，
-这些做为非核心功能不再移植，留给大家自己动手。
-*/
 /****************************************************************************/
 
 

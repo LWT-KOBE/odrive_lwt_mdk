@@ -72,7 +72,15 @@
 .\objects\vofa.o: .\MotorControl\controller.h
 .\objects\vofa.o: .\MotorControl\flash_writer.h
 .\objects\vofa.o: .\MotorControl\anticogging.h
+.\objects\vofa.o: .\MotorControl\ntc.h
 .\objects\vofa.o: .\Hardware\can.h
 .\objects\vofa.o: .\SEGGER\RTT\SEGGER_RTT.h
 .\objects\vofa.o: .\SEGGER\RTT\../Config/SEGGER_RTT_Conf.h
 .\objects\vofa.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\vofa.o: .\Communication\communication_usb.h
+.\objects\vofa.o: .\Communication\communication_usart.h
+.\objects\vofa.o: .\Communication\communication_can.h
+.\objects\vofa.o: .\Scheduler\scheduler.h
+.\objects\vofa.o: .\Scheduler\debug.h
+.\objects\vofa.o: .\IAP\IAP.h
+.\objects\vofa.o: .\Hardware\dwt.h

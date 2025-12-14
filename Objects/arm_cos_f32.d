@@ -71,8 +71,16 @@
 .\objects\arm_cos_f32.o: .\MotorControl\controller.h
 .\objects\arm_cos_f32.o: .\MotorControl\flash_writer.h
 .\objects\arm_cos_f32.o: .\MotorControl\anticogging.h
+.\objects\arm_cos_f32.o: .\MotorControl\ntc.h
 .\objects\arm_cos_f32.o: .\Hardware\vofa.h
 .\objects\arm_cos_f32.o: .\Hardware\can.h
 .\objects\arm_cos_f32.o: .\SEGGER\RTT\SEGGER_RTT.h
 .\objects\arm_cos_f32.o: .\SEGGER\RTT\../Config/SEGGER_RTT_Conf.h
 .\objects\arm_cos_f32.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\arm_cos_f32.o: .\Communication\communication_usb.h
+.\objects\arm_cos_f32.o: .\Communication\communication_usart.h
+.\objects\arm_cos_f32.o: .\Communication\communication_can.h
+.\objects\arm_cos_f32.o: .\Scheduler\scheduler.h
+.\objects\arm_cos_f32.o: .\Scheduler\debug.h
+.\objects\arm_cos_f32.o: .\IAP\IAP.h
+.\objects\arm_cos_f32.o: .\Hardware\dwt.h

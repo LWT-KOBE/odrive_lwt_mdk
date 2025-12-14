@@ -71,8 +71,16 @@
 .\objects\traptraj.o: .\MotorControl\controller.h
 .\objects\traptraj.o: .\MotorControl\flash_writer.h
 .\objects\traptraj.o: .\MotorControl\anticogging.h
+.\objects\traptraj.o: .\MotorControl\ntc.h
 .\objects\traptraj.o: .\Hardware\vofa.h
 .\objects\traptraj.o: .\Hardware\can.h
 .\objects\traptraj.o: .\SEGGER\RTT\SEGGER_RTT.h
 .\objects\traptraj.o: .\SEGGER\RTT\../Config/SEGGER_RTT_Conf.h
 .\objects\traptraj.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\traptraj.o: .\Communication\communication_usb.h
+.\objects\traptraj.o: .\Communication\communication_usart.h
+.\objects\traptraj.o: .\Communication\communication_can.h
+.\objects\traptraj.o: .\Scheduler\scheduler.h
+.\objects\traptraj.o: .\Scheduler\debug.h
+.\objects\traptraj.o: .\IAP\IAP.h
+.\objects\traptraj.o: .\Hardware\dwt.h

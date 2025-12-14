@@ -75,6 +75,7 @@ void ADC1_DMA_Init(void)
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 2, ADC_SampleTime_84Cycles);  //M1_temp
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 3, ADC_SampleTime_84Cycles);  //AUX_temp
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 4, ADC_SampleTime_84Cycles);  //Vbus
+	// ADC_RegularChannelConfig(ADC1, ADC_Channel_16, 5, ADC_SampleTime_84Cycles);  //Vbus
 	
 	ADC_InjectedSequencerLengthConfig(ADC1,1);                                  //注入组只有一个通道
 	ADC_InjectedChannelConfig(ADC1, ADC_Channel_6, 1, ADC_SampleTime_3Cycles);  //channel_6,检测Vbus

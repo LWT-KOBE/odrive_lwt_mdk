@@ -6,7 +6,9 @@
 uint32_t  motor_error;
 float  Ialpha_beta[2];
 
+// Idq目标值
 float2D  Idq_setpoint_;
+// Vdq目标值
 float2D  Vdq_setpoint_;
 float  phase_;
 float  phase_vel_;
@@ -16,7 +18,8 @@ float  *phase_src_;
 float  *phase_vel_src_;
 
 float  Id_measured,Iq_measured;   //[A]
-float  I_measured_report_filter_k = 1.0f;
+// float  I_measured_report_filter_k = 1.0f;
+float  I_measured_report_filter_k = 0.8f;
 float  pi_gains_[2];
 float  v_current_control_integral_d = 0.0f; // [V]
 float  v_current_control_integral_q = 0.0f; // [V]

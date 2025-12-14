@@ -1,15 +1,15 @@
 #include "MyProject.h"
 #include "timer.h"
 /*****************************************************************************/
-volatile uint8_t JS_RTT_BufferUp1[2048] = {0,};
-const uint8_t JS_RTT_Channel = 1;
-typedef struct {
-    volatile float msg1;
-    volatile float msg2;
-	volatile float msg3;
-	volatile float msg4;
-}RTT_MSG_U1I1;
-RTT_MSG_U1I1 rtt_JsMsg,rtt_JsMsg2;
+// volatile uint8_t JS_RTT_BufferUp1[2048] = {0,};
+// const uint8_t JS_RTT_Channel = 1;
+// typedef struct {
+//     volatile float msg1;
+//     volatile float msg2;
+// 	volatile float msg3;
+// 	volatile float msg4;
+// }RTT_MSG_U1I1;
+// RTT_MSG_U1I1 rtt_JsMsg,rtt_JsMsg2;
 void TIM1_PWM_Init(void)
 {
 	NVIC_InitTypeDef          NVIC_InitStructure;
@@ -231,39 +231,10 @@ void TIM7_Init(void)
 int time_cnt = 0;
 int enc_cnt = 0;
 
-
-
-float Calculate_Temperature(uint16_t adc_value) {
-	float voltage = (float)adc_value * VREF / ADC_RES;
-    float resistance = (3.3 - voltage) * 10000 / voltage;
-    float steinhart = resistance / 10000.0;
-    steinhart = log(steinhart);
-    steinhart = 1.0 / (0.001129148 + 0.000234125 * steinhart +
-                      0.0000000876741 * pow(steinhart, 3));
-    return steinhart - 273.15; // 开尔文转摄氏度
-}
-
-// ADC值转换为温度函数
-float adc_to_temperature(uint16_t adc_value) {
-    // 1. 将ADC值转换为电压
-    float voltage = (float)adc_value * VREF / ADC_RES;
-    
-    // 2. 计算NTC当前电阻值
-    // 公式: Rntc = Rdiv * (Vref - Vntc) / Vntc
-    float ntc_resistance = VOLTAGE_DIVIDER_R * (VREF - voltage) / voltage;
-    
-    // 3. 使用Steinhart-Hart方程计算温度(开尔文)
-    // 1/T = 1/T0 + (1/B) * ln(R/R0)
-    float steinhart;
-    steinhart = (1.0f / NTC_T25) + (1.0f / NTC_BETA) * logf(ntc_resistance / NTC_R25);
-    float temp_kelvin = 1.0f / steinhart;
-    
-    // 4. 转换为摄氏度
-    float temp_celsius = temp_kelvin - 273.15f;
-    
-    return temp_celsius;
-}
-
+CanRxMsg CAN1_rx_msg;
+float temperature_c, temperature_c2;
+// 1. 定义NTC参数（根据实际硬件配置）
+NTC_Params_t ntc_params, ntc_params2;
 void TIM7_IRQHandler(void)
 {
 	static u8 c = 0;
@@ -271,50 +242,64 @@ void TIM7_IRQHandler(void)
 	{	
 		if(c == 0){
 		    c = 1;
-			SEGGER_RTT_ConfigUpBuffer(1,                  // 通道号
-                            // 通道名字（命名有意义的，一定要按照官方文档“RTT channel naming convention”的规范来）
-                            "JScope_f4f4f4f4",              // 数据包含1个32位的时间戳与1个uint32_t变量、1个uint32_t变量
-                            (uint8_t*)&JS_RTT_BufferUp1[0], // 缓存地址
-                            sizeof(JS_RTT_BufferUp1),       // 缓存大小
-                            SEGGER_RTT_MODE_NO_BLOCK_SKIP); // 非阻塞
+			// SEGGER_RTT_ConfigUpBuffer(1,                  // 通道号
+            //                 // 通道名字（命名有意义的，一定要按照官方文档“RTT channel naming convention”的规范来）
+            //                 "JScope_f4f4f4f4",              // 数据包含1个32位的时间戳与1个uint32_t变量、1个uint32_t变量
+            //                 (uint8_t*)&JS_RTT_BufferUp1[0], // 缓存地址
+            //                 sizeof(JS_RTT_BufferUp1),       // 缓存大小
+            //                 SEGGER_RTT_MODE_NO_BLOCK_SKIP); // 非阻塞
 			//SEGGER_RTT_ConfigUpBuffer(JS_RTT_Channel, "JScope_t4i4i4", &JS_RTT_UpBuff[0], sizeof(JS_RTT_UpBuff), SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
-		}
-		float Rt=0;   //NTC电阻
-		float R=10000; //10K固定阻值电阻
-		float T0=273.15+25;//转换为开尔文温度
-		float B=3450; //B值
-		float Ka=273.15; //K值
-		float VR=0;//电压值
-		float temp=0;//温度值
 
-		VR=(float) (adc1_value[0]/4095*3.3); //转换成电压值
-   		Rt=(3.3-VR)*10000/VR;//计算Rt
-   		temp=1/(1/T0+log(Rt/R)/B)-Ka+0.5; //计算温度
-		
-		rtt_JsMsg.msg1 = pos_estimate_;
-		rtt_JsMsg.msg2 = vbus_voltage;
-		rtt_JsMsg.msg3 = vel_estimate_;
-		rtt_JsMsg.msg4 = input_vel_;
-		SEGGER_RTT_Write(JS_RTT_Channel, &rtt_JsMsg, sizeof(rtt_JsMsg));	/* 上传数据 */
+			
+			
+			// 典型10K NTC (B=3950) 配置
+			// 串联电阻: 3.3kΩ
+			// ADC参考电压: 3.3V
+			// ADC分辨率: 12位 (0-4095)
+			NTC_InitParams(&ntc_params,
+						10000.0f,   // 标称电阻 10kΩ @25°C
+						25.0f,      // 标称温度 25°C
+						3950.0f,    // B值 3950
+						3300.0f,   // 串联电阻 3.3kΩ
+						3.3f,       // 参考电压 3.3V
+						4095);      // 12位ADC分辨率
+			NTC_InitParams(&ntc_params2,
+						10000.0f,   // 标称电阻 10kΩ @25°C
+						25.0f,      // 标称温度 25°C
+						3950.0f,    // B值 3950
+						3300.0f,   // 串联电阻 3.3kΩ
+						3.3f,       // 参考电压 3.3V
+						4095);      // 12位ADC分辨率
+		}
+		temperature_c2 = NTC_GetTemperatureC(adc1_value[0], &ntc_params2);
+		temperature_c = NTC_GetTemperatureC(adc1_value[1], &ntc_params);
+
+		// rtt_JsMsg.msg1 = pos_estimate_;
+		// rtt_JsMsg.msg2 = vbus_voltage;
+		// rtt_JsMsg.msg3 = vel_estimate_;
+		// rtt_JsMsg.msg4 = input_vel_;
+		// SEGGER_RTT_Write(JS_RTT_Channel, &rtt_JsMsg, sizeof(rtt_JsMsg));	/* 上传数据 */
 		
 		time_cnt++;
 		//enc_cnt = HALL_GETState();
 		
-
 		// 位置估计
 		 //OD_CANSendData(CAN1,OD_CANID,MSG_GET_ENCODER_ESTIMATES,8,pos_estimate_,&ODSendData);
-		OD_CANSendData_2(CAN1,OD_CANID,MSG_GET_ENCODER_ESTIMATES,8,pos_estimate_,vel_estimate_,&ODSendData);
+//		OD_CANSendData_2(CAN1,OD_CANID,MSG_GET_ENCODER_ESTIMATES,8,pos_estimate_,vel_estimate_,&ODSendData);
+		// 发送Iq目标值和测量值
+		//OD_CANSendData_2(CAN1,OD_CANID,MSG_GET_IQ,8,Idq_setpoint_.q,Iq_measured,&ODSendData);
 		// 母线电流
 		//can_SendFloatData(CAN1, 0x303, 4, Ibus, &ODSendData);
-
+		
+		//IAP_Send_Device_ino();
 		
 		// 速度估计
 		// OD_CANSendData(CAN1,OD_CANID,MSG_GET_ENCODER_ESTIMATES,8,pos_estimate_,&ODSendData);
 		
-		if(time_cnt > 20){
-			time_cnt = 0;
-			// 进入闭环控制状态才发送
-			if(current_state_ == AXIS_STATE_CLOSED_LOOP_CONTROL){
+//		if(time_cnt > 20){
+//			time_cnt = 0;
+//			// 进入闭环控制状态才发送
+//			//if(current_state_ == AXIS_STATE_CLOSED_LOOP_CONTROL){
 				vofaFrame.fdata[0] = vel_estimate_;
 				vofaFrame.fdata[1] = input_vel_;
 				
@@ -327,12 +312,14 @@ void TIM7_IRQHandler(void)
 				vofaFrame.fdata[8] = Ibus;
 				vofaFrame.fdata[9] = vbus_voltage;
 				vofaFrame.fdata[10] = Iq_measured;
-				vofaFrame.fdata[11] = input_torque_; 
-//				// vofaFrame.fdata[12] = adc_to_temperature(adc1_value[2]); // 计算温度值，单位摄氏度
-//				vofaFrame.fdata[13] = Calculate_Temperature(adc1_value[0]); // Vbus
+				vofaFrame.fdata[11] = Idq_setpoint_.q; 
+				vofaFrame.fdata[12] = temperature_c; // 计算温度值，单位摄氏度
+				vofaFrame.fdata[13] = temperature_c2; // Vbus
+				vofaFrame.fdata[14] = Get_Temperature(adc1_value[4]); // ADC原始值
+				vofaFrame.fdata[15] = adc1_value[4]; // ADC原始值
 				vofa_printf_USB();
-			}
-		}
+//			//}
+//		}
 		TIM_ClearITPendingBit(TIM7, TIM_IT_Update);
 		// 在这里添加定时器7的中断处理代码
 	}

@@ -6,6 +6,10 @@
 
 
 /****************************************************************************/
+// Idq目标值
+extern float2D  Idq_setpoint_;
+// Vdq目标值
+extern float2D  Vdq_setpoint_;
 extern  uint32_t  motor_error;
 extern  float  Ialpha_beta[2];
 extern  float2D  *Idq_setpoint_src_;

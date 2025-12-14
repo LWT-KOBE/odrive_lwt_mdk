@@ -71,8 +71,16 @@
 .\objects\open_loop_controller.o: .\MotorControl\controller.h
 .\objects\open_loop_controller.o: .\MotorControl\flash_writer.h
 .\objects\open_loop_controller.o: .\MotorControl\anticogging.h
+.\objects\open_loop_controller.o: .\MotorControl\ntc.h
 .\objects\open_loop_controller.o: .\Hardware\vofa.h
 .\objects\open_loop_controller.o: .\Hardware\can.h
 .\objects\open_loop_controller.o: .\SEGGER\RTT\SEGGER_RTT.h
 .\objects\open_loop_controller.o: .\SEGGER\RTT\../Config/SEGGER_RTT_Conf.h
 .\objects\open_loop_controller.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\open_loop_controller.o: .\Communication\communication_usb.h
+.\objects\open_loop_controller.o: .\Communication\communication_usart.h
+.\objects\open_loop_controller.o: .\Communication\communication_can.h
+.\objects\open_loop_controller.o: .\Scheduler\scheduler.h
+.\objects\open_loop_controller.o: .\Scheduler\debug.h
+.\objects\open_loop_controller.o: .\IAP\IAP.h
+.\objects\open_loop_controller.o: .\Hardware\dwt.h

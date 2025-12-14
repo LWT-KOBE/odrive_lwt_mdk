@@ -6,7 +6,7 @@
 AXIS_State_Type  current_state_;
 AXIS_CONFIG  axis_config;
 
-extern  uint8_t  usb_sndbuff[256];
+
 /*****************************************************************************/
 bool start_closed_loop_control(void)
 {

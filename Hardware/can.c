@@ -458,6 +458,7 @@ u8 CAN1_Receive_Msg(u8 *buf)
 
 CanRxMsg can1_rx_msg;
 u32 rxbuf3;
+u8 flag_iap;
 void CAN1_RX0_IRQHandler(void){
 	//CanRxMsg can1_rx_msg;
 	if (CAN_GetITStatus(CAN1,CAN_IT_FMP0)!= RESET){
@@ -467,7 +468,9 @@ void CAN1_RX0_IRQHandler(void){
 		
 		// 从接收 FIFO 中读取消息		
 		CAN_Receive(CAN1, CAN_FIFO0, &can1_rx_msg);
-		
+		// CAN_IAP升级
+		IAP_APP_CAN_ReStart(can1_rx_msg);
+		//SaveData(can1_rx_msg);
 		// 存储接收到的标准 ID
 		rxbuf3=can1_rx_msg.StdId;
 
